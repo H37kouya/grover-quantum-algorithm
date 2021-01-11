@@ -1,6 +1,10 @@
 package model
 
-import "math"
+import (
+	"crypto/rand"
+	"math"
+	"math/big"
+)
 
 type Qubits []Qubit
 
@@ -14,6 +18,7 @@ func (qubits Qubits) Sum() Qubit {
 	return sum
 }
 
+// SumOfSquares 二乗の和を求める
 func (qubits Qubits) SumOfSquares() Qubit {
 	sum := Qubit(complex(float64(0), float64(0)))
 
@@ -24,6 +29,7 @@ func (qubits Qubits) SumOfSquares() Qubit {
 	return sum
 }
 
+// SumAbsOfSquares 二乗の絶対値の和を求める
 func (qubits Qubits) SumAbsOfSquares() float64 {
 	sum := 0.0
 
@@ -108,4 +114,17 @@ func (qubits Qubits) Normalize() *Qubits {
 	return qubits.Map(func(qubit Qubit, i int) Qubit {
 		return qubit / Qubit(complex(total, 0))
 	})
+}
+
+func RandomQubits(len int) Qubits {
+	newQubits := make(Qubits, len)
+
+	for i := 0; i < len; i++ {
+		r1, _ := rand.Int(rand.Reader, big.NewInt(1e10))
+		r2, _ := rand.Int(rand.Reader, big.NewInt(1e10))
+
+		newQubits[i] = Qubit(complex(float64(r1.Int64() - 1e10 / 2), float64(r2.Int64() - 1e10 / 2)))
+	}
+
+	return newQubits
 }

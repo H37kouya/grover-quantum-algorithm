@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"github.com/spf13/cobra"
+	"grover-quantum-search/pkg/domain/model"
 	"grover-quantum-search/pkg/usecase"
 )
 
@@ -78,6 +79,78 @@ func NewNqubitTimesAllExecute() *cobra.Command {
 		SilenceErrors: true,
 		SilenceUsage:  true,
 	}
+
+	return cmd
+}
+
+func NewRandomNqubitCsvExecute() *cobra.Command {
+	type Options struct{
+		Optint int    `validate:"min=1,max=30"`
+		PlusReal float64
+		PlusImag float64
+	}
+
+	var (
+		o = &Options{}
+	)
+
+	cmd := &cobra.Command{
+		Use:   "nqubit-random-csv",
+		Short: "A brief description of your command",
+		PreRunE: func(cmd *cobra.Command, args []string) error {
+			return validateParams(*o)
+		},
+		Run: func(cmd *cobra.Command, args []string) {
+			usecase.RandomNQubitCsvUsecase(
+				o.Optint,
+				model.Qubit(complex(o.PlusReal, o.PlusImag)),
+			)
+		},
+		SilenceErrors: true,
+		SilenceUsage:  true,
+	}
+
+	cmd.Flags().IntVarP(&o.Optint, "nqubit", "n", 1, "nqubit")
+	cmd.Flags().Float64VarP(&o.PlusReal, "plus-real", "r", 0.0, "nqubit")
+	cmd.Flags().Float64VarP(&o.PlusImag, "plus-imag", "i", 0.0, "nqubit")
+
+	return cmd
+}
+
+func NewRandomNqubitTimesExecute() *cobra.Command {
+	type Options struct{
+		Optint   int    `validate:"min=2,max=30"`
+		OptCount int    `validate:"min=1"`
+		PlusReal float64
+		PlusImag float64
+	}
+
+	var (
+		o = &Options{}
+	)
+
+	cmd := &cobra.Command{
+		Use:   "nqubit-random-times",
+		Short: "A brief description of your command",
+		PreRunE: func(cmd *cobra.Command, args []string) error {
+			return validateParams(*o)
+		},
+		Run: func(cmd *cobra.Command, args []string) {
+			usecase.RandomNQubitTimesCountUsecase(
+				o.Optint,
+				o.OptCount,
+				o.PlusReal,
+				o.PlusImag,
+			)
+		},
+		SilenceErrors: true,
+		SilenceUsage:  true,
+	}
+
+	cmd.Flags().IntVarP(&o.Optint, "nqubit", "n", 2, "nqubit")
+	cmd.Flags().IntVarP(&o.OptCount, "count", "c", 1, "nqubit")
+	cmd.Flags().Float64VarP(&o.PlusReal, "plus-real", "r", 0.0, "nqubit")
+	cmd.Flags().Float64VarP(&o.PlusImag, "plus-imag", "i", 0.0, "nqubit")
 
 	return cmd
 }

@@ -26,6 +26,8 @@ func NewCmdRoot() *cobra.Command {
 	cmd.AddCommand(NewNqubitCsvExecute())
 	cmd.AddCommand(NewNqubitTimesExecute())
 	cmd.AddCommand(NewNqubitTimesAllExecute())
+	cmd.AddCommand(NewRandomNqubitTimesExecute())
+	cmd.AddCommand(NewRandomNqubitCsvExecute())
 	return cmd
 }
 
