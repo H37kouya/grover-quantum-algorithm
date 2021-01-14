@@ -13,4 +13,3 @@ func (qubit Qubit) ToComplex128() complex128 {
 func (qubit Qubit) Abs() float64 {
 	return cmplx.Abs(qubit.ToComplex128())
 }
-

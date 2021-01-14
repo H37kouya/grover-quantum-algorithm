@@ -7,8 +7,8 @@ import (
 )
 
 func NewNqubitCsvExecute() *cobra.Command {
-	type Options struct{
-		Optint int    `validate:"min=1,max=30"`
+	type Options struct {
+		Optint int `validate:"min=1,max=30"`
 	}
 
 	var (
@@ -34,8 +34,8 @@ func NewNqubitCsvExecute() *cobra.Command {
 }
 
 func NewNqubitTimesExecute() *cobra.Command {
-	type Options struct{
-		Optint int    `validate:"min=2,max=30"`
+	type Options struct {
+		Optint int `validate:"min=2,max=30"`
 	}
 
 	var (
@@ -84,8 +84,9 @@ func NewNqubitTimesAllExecute() *cobra.Command {
 }
 
 func NewRandomNqubitCsvExecute() *cobra.Command {
-	type Options struct{
-		Optint int    `validate:"min=1,max=30"`
+	type Options struct {
+		Optint   int `validate:"min=1,max=30"`
+		Loop     int `validate:"min=1,max=100000"`
 		PlusReal float64
 		PlusImag float64
 	}
@@ -104,6 +105,7 @@ func NewRandomNqubitCsvExecute() *cobra.Command {
 			usecase.RandomNQubitCsvUsecase(
 				o.Optint,
 				model.Qubit(complex(o.PlusReal, o.PlusImag)),
+				o.Loop,
 			)
 		},
 		SilenceErrors: true,
@@ -111,6 +113,7 @@ func NewRandomNqubitCsvExecute() *cobra.Command {
 	}
 
 	cmd.Flags().IntVarP(&o.Optint, "nqubit", "n", 1, "nqubit")
+	cmd.Flags().IntVarP(&o.Loop, "loop", "l", 1, "nqubit")
 	cmd.Flags().Float64VarP(&o.PlusReal, "plus-real", "r", 0.0, "nqubit")
 	cmd.Flags().Float64VarP(&o.PlusImag, "plus-imag", "i", 0.0, "nqubit")
 
@@ -118,9 +121,9 @@ func NewRandomNqubitCsvExecute() *cobra.Command {
 }
 
 func NewRandomNqubitTimesExecute() *cobra.Command {
-	type Options struct{
-		Optint   int    `validate:"min=2,max=30"`
-		OptCount int    `validate:"min=1"`
+	type Options struct {
+		Optint   int `validate:"min=2,max=30"`
+		OptCount int `validate:"min=1"`
 		PlusReal float64
 		PlusImag float64
 	}

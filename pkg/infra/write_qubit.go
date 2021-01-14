@@ -44,10 +44,10 @@ func WriteQubitCsv(
 		Abs:  "abs",
 	}))
 	if err != nil {
-		return  err
+		return err
 	}
 	writer.Flush()
-	fmt.Println(path+" is created!")
+	fmt.Println(path + " is created!")
 
 	return nil
 }

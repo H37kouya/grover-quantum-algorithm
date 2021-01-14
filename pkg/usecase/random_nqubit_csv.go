@@ -8,8 +8,7 @@ import (
 	"math"
 )
 
-func RandomNQubitCsvUsecase(n int, qubitPlus model.Qubit) {
-	loop := 1000
+func RandomNQubitCsvUsecase(n int, qubitPlus model.Qubit, loop int) {
 
 	qubits := model.RandomQubits(int(math.Pow(2.0, float64(n))))
 	qubits = *qubits.Normalize()
@@ -44,15 +43,15 @@ func RandomNQubitCsvUsecase(n int, qubitPlus model.Qubit) {
 	pararellQubitArgs = append(pararellQubitArgs,
 		&infra.PararellQubitArg{
 			Qubits: qubits,
-			Path:   "./outputs/"+timeForFileName+"_original.csv",
+			Path:   "./outputs/" + timeForFileName + "_original.csv",
 		},
 		&infra.PararellQubitArg{
 			Qubits: targetQubitList,
-			Path:   "./outputs/"+timeForFileName+"_target.csv",
+			Path:   "./outputs/" + timeForFileName + "_target.csv",
 		},
 		&infra.PararellQubitArg{
 			Qubits: qubitAbsMaxList,
-			Path:   "./outputs/"+timeForFileName+"_max.csv",
+			Path:   "./outputs/" + timeForFileName + "_max.csv",
 		},
 		&infra.PararellQubitArg{
 			Qubits: qubitAbsMinList,
@@ -64,12 +63,11 @@ func RandomNQubitCsvUsecase(n int, qubitPlus model.Qubit) {
 
 	err := infra.WriteMultipleQubitCsv(
 		multipleQubits,
-		"./outputs/" + timeForFileName + "_multiple.csv",
+		"./outputs/"+timeForFileName+"_multiple.csv",
 	)
 	if err != nil {
 		panic(err)
 	}
-
 
 	fmt.Println("done")
 }

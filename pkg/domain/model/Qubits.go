@@ -40,7 +40,6 @@ func (qubits Qubits) SumAbsOfSquares() float64 {
 	return sum
 }
 
-
 func (qubits Qubits) Average() Qubit {
 	sumQubit := qubits.Sum()
 	lenQubit := len(qubits)
@@ -123,7 +122,7 @@ func RandomQubits(len int) Qubits {
 		r1, _ := rand.Int(rand.Reader, big.NewInt(1e10))
 		r2, _ := rand.Int(rand.Reader, big.NewInt(1e10))
 
-		newQubits[i] = Qubit(complex(float64(r1.Int64() - 1e10 / 2), float64(r2.Int64() - 1e10 / 2)))
+		newQubits[i] = Qubit(complex(float64(r1.Int64()-1e10/2), float64(r2.Int64()-1e10/2)))
 	}
 
 	return newQubits

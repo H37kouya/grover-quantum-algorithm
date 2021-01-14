@@ -23,7 +23,7 @@ func FixedNQubitCsvUsecase(n int) {
 	newQubitTransitionData[0] = qubits
 
 	for i := 1; i < loop; i++ {
-		newQubits := lib.GroverQuantumSearch(&newQubitTransitionData[i - 1], targets)
+		newQubits := lib.GroverQuantumSearch(&newQubitTransitionData[i-1], targets)
 		newQubitTransitionData[i] = *newQubits
 	}
 
@@ -45,27 +45,27 @@ func FixedNQubitCsvUsecase(n int) {
 	pararellQubitArgs = append(pararellQubitArgs,
 		&infra.PararellQubitArg{
 			Qubits: qubits,
-			Path:   "./outputs/"+timeForFileName+"_original.csv",
+			Path:   "./outputs/" + timeForFileName + "_original.csv",
 		},
 		&infra.PararellQubitArg{
 			Qubits: targetQubitList,
-			Path:   "./outputs/"+timeForFileName+"_target.csv",
+			Path:   "./outputs/" + timeForFileName + "_target.csv",
 		},
 		&infra.PararellQubitArg{
 			Qubits: qubitNo2List,
-			Path:   "./outputs/"+timeForFileName+"_2.csv",
+			Path:   "./outputs/" + timeForFileName + "_2.csv",
 		},
 		&infra.PararellQubitArg{
 			Qubits: qubitNo3List,
-			Path:   "./outputs/"+timeForFileName+"_3.csv",
+			Path:   "./outputs/" + timeForFileName + "_3.csv",
 		},
 		&infra.PararellQubitArg{
 			Qubits: qubitNo4List,
-			Path:   "./outputs/"+timeForFileName+"_4.csv",
+			Path:   "./outputs/" + timeForFileName + "_4.csv",
 		},
 		&infra.PararellQubitArg{
 			Qubits: qubitNo4List,
-			Path:   "./outputs/"+timeForFileName+"_max.csv",
+			Path:   "./outputs/" + timeForFileName + "_max.csv",
 		},
 	)
 

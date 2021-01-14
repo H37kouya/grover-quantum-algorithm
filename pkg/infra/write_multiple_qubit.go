@@ -22,9 +22,9 @@ func WriteMultipleQubitCsv(
 	data := make([]shouldMultipleChildData, 0, len(multipleQubits))
 	for idx := range multipleQubits {
 		data = append(data, shouldMultipleChildData{
-			Real: "Real"+strconv.Itoa(idx+1),
-			Imag: "Imag"+strconv.Itoa(idx+1),
-			Abs: "Abs"+strconv.Itoa(idx+1),
+			Real: "Real" + strconv.Itoa(idx+1),
+			Imag: "Imag" + strconv.Itoa(idx+1),
+			Abs:  "Abs" + strconv.Itoa(idx+1),
 		})
 	}
 
@@ -33,10 +33,10 @@ func WriteMultipleQubitCsv(
 		data: data,
 	}))
 	if err != nil {
-		return  err
+		return err
 	}
 	writer.Flush()
-	fmt.Println(path+" is created!")
+	fmt.Println(path + " is created!")
 
 	return nil
 }
@@ -53,7 +53,7 @@ type shouldMultipleChildData struct {
 }
 
 func (d shouldMultipleWriteData) toCsvRecord() []string {
-	results := make([]string, 0, 1 + len(d.data))
+	results := make([]string, 0, 1+len(d.data))
 	results = append(results, d.No)
 
 	for _, v := range d.data {
@@ -78,7 +78,7 @@ func writableMultipleQubitData(multipleQubits []*model.Qubits, header shouldMult
 			})
 		}
 		shouldMultipleData := shouldMultipleWriteData{
-			No: strconv.Itoa(newRecordIdx),
+			No:   strconv.Itoa(newRecordIdx),
 			data: data,
 		}
 		newRecords = append(newRecords, shouldMultipleData.toCsvRecord())
@@ -86,4 +86,3 @@ func writableMultipleQubitData(multipleQubits []*model.Qubits, header shouldMult
 
 	return newRecords
 }
-
