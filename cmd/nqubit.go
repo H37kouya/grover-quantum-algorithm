@@ -113,7 +113,7 @@ func NewRandomNqubitCsvExecute() *cobra.Command {
 	}
 
 	cmd.Flags().IntVarP(&o.Optint, "nqubit", "n", 1, "nqubit")
-	cmd.Flags().IntVarP(&o.Loop, "loop", "l", 1, "nqubit")
+	cmd.Flags().IntVarP(&o.Loop, "loop", "l", 512, "nqubit")
 	cmd.Flags().Float64VarP(&o.PlusReal, "plus-real", "r", 0.0, "nqubit")
 	cmd.Flags().Float64VarP(&o.PlusImag, "plus-imag", "i", 0.0, "nqubit")
 

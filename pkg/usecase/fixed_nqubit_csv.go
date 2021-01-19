@@ -41,35 +41,35 @@ func FixedNQubitCsvUsecase(n int) {
 		qubitAbsMaxList[i] = q[maxIdx]
 	}
 
-	pararellQubitArgs := make([]*infra.PararellQubitArg, 0, 5)
-	pararellQubitArgs = append(pararellQubitArgs,
-		&infra.PararellQubitArg{
+	parallelQubitArgs := make([]*infra.ParallelQubitArg, 0, 5)
+	parallelQubitArgs = append(parallelQubitArgs,
+		&infra.ParallelQubitArg{
 			Qubits: qubits,
 			Path:   "./outputs/" + timeForFileName + "_original.csv",
 		},
-		&infra.PararellQubitArg{
+		&infra.ParallelQubitArg{
 			Qubits: targetQubitList,
 			Path:   "./outputs/" + timeForFileName + "_target.csv",
 		},
-		&infra.PararellQubitArg{
+		&infra.ParallelQubitArg{
 			Qubits: qubitNo2List,
 			Path:   "./outputs/" + timeForFileName + "_2.csv",
 		},
-		&infra.PararellQubitArg{
+		&infra.ParallelQubitArg{
 			Qubits: qubitNo3List,
 			Path:   "./outputs/" + timeForFileName + "_3.csv",
 		},
-		&infra.PararellQubitArg{
+		&infra.ParallelQubitArg{
 			Qubits: qubitNo4List,
 			Path:   "./outputs/" + timeForFileName + "_4.csv",
 		},
-		&infra.PararellQubitArg{
+		&infra.ParallelQubitArg{
 			Qubits: qubitNo4List,
 			Path:   "./outputs/" + timeForFileName + "_max.csv",
 		},
 	)
 
-	infra.PararellProcessQubitCsv(pararellQubitArgs)
+	infra.ParallelProcessQubitCsv(parallelQubitArgs)
 
 	fmt.Println("done")
 }

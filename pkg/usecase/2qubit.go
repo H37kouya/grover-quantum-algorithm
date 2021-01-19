@@ -36,31 +36,31 @@ func Fixed2QubitUsecase() {
 		qubitNo4List = append(qubitNo4List, q[3])
 	}
 
-	pararellQubitArgs := make([]*infra.PararellQubitArg, 0, 0)
+	pararellQubitArgs := make([]*infra.ParallelQubitArg, 0, 0)
 	pararellQubitArgs = append(pararellQubitArgs,
-		&infra.PararellQubitArg{
+		&infra.ParallelQubitArg{
 			Qubits: qubits,
 			Path:   "./outputs/" + timeForFileName + "_original.csv",
 		},
-		&infra.PararellQubitArg{
+		&infra.ParallelQubitArg{
 			Qubits: targetQubitList,
 			Path:   "./outputs/" + timeForFileName + "_target.csv",
 		},
-		&infra.PararellQubitArg{
+		&infra.ParallelQubitArg{
 			Qubits: qubitNo2List,
 			Path:   "./outputs/" + timeForFileName + "_2.csv",
 		},
-		&infra.PararellQubitArg{
+		&infra.ParallelQubitArg{
 			Qubits: qubitNo3List,
 			Path:   "./outputs/" + timeForFileName + "_3.csv",
 		},
-		&infra.PararellQubitArg{
+		&infra.ParallelQubitArg{
 			Qubits: qubitNo4List,
 			Path:   "./outputs/" + timeForFileName + "_4.csv",
 		},
 	)
 
-	infra.PararellProcessQubitCsv(pararellQubitArgs)
+	infra.ParallelProcessQubitCsv(pararellQubitArgs)
 
 	fmt.Println("done")
 }

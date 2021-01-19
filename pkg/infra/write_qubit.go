@@ -9,17 +9,17 @@ import (
 	"sync"
 )
 
-type PararellQubitArg struct {
+type ParallelQubitArg struct {
 	Qubits model.Qubits
 	Path   string
 }
 
-func PararellProcessQubitCsv(pararellQubitArg []*PararellQubitArg) {
+func ParallelProcessQubitCsv(parallelQubitArg []*ParallelQubitArg) {
 	wg := &sync.WaitGroup{}
-	for _, arg := range pararellQubitArg {
+	for _, arg := range parallelQubitArg {
 		wg.Add(1)
-		go func(a *PararellQubitArg) {
-			WriteQubitCsv(&a.Qubits, a.Path)
+		go func(a *ParallelQubitArg) {
+			_ = WriteQubitCsv(&a.Qubits, a.Path)
 			wg.Done()
 		}(arg)
 	}

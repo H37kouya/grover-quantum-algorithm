@@ -23,6 +23,8 @@ func RandomNQubitCsvUsecase(n int, qubitPlus model.Qubit, loop int) {
 	targetQubitList := make(model.Qubits, loop)
 	qubitAbsMaxList := make(model.Qubits, loop)
 	qubitAbsMinList := make(model.Qubits, loop)
+	optionals1List := make(model.Qubits, loop)
+	optionals2List := make(model.Qubits, loop)
 	maxIdx := qubits.MaxIdx()
 	minIdx := qubits.MinIdx()
 
@@ -34,32 +36,50 @@ func RandomNQubitCsvUsecase(n int, qubitPlus model.Qubit, loop int) {
 		targetQubitList[i] = newQubits[targets[0]]
 		qubitAbsMaxList[i] = newQubits[maxIdx]
 		qubitAbsMinList[i] = newQubits[minIdx]
+		optionals1List[i] = newQubits[targets[0]+1]
+		optionals2List[i] = newQubits[targets[0]+2]
+
 		beforeQubits = newQubits
 	}
-	multipleQubits := make([]*model.Qubits, 0, 3)
-	multipleQubits = append(multipleQubits, &targetQubitList, &qubitAbsMaxList, &qubitAbsMinList)
+	multipleQubits := make([]*model.Qubits, 0, 5)
+	multipleQubits = append(
+		multipleQubits,
+		&targetQubitList,
+		&qubitAbsMaxList,
+		&qubitAbsMinList,
+		&optionals1List,
+		&optionals2List,
+	)
 
-	pararellQubitArgs := make([]*infra.PararellQubitArg, 0, 4)
-	pararellQubitArgs = append(pararellQubitArgs,
-		&infra.PararellQubitArg{
+	parallelQubitArgs := make([]*infra.ParallelQubitArg, 0, 6)
+	parallelQubitArgs = append(parallelQubitArgs,
+		&infra.ParallelQubitArg{
 			Qubits: qubits,
 			Path:   "./outputs/" + timeForFileName + "_original.csv",
 		},
-		&infra.PararellQubitArg{
+		&infra.ParallelQubitArg{
 			Qubits: targetQubitList,
 			Path:   "./outputs/" + timeForFileName + "_target.csv",
 		},
-		&infra.PararellQubitArg{
+		&infra.ParallelQubitArg{
 			Qubits: qubitAbsMaxList,
 			Path:   "./outputs/" + timeForFileName + "_max.csv",
 		},
-		&infra.PararellQubitArg{
+		&infra.ParallelQubitArg{
 			Qubits: qubitAbsMinList,
 			Path:   "./outputs/" + timeForFileName + "_min.csv",
 		},
+		&infra.ParallelQubitArg{
+			Qubits: optionals1List,
+			Path:   "./outputs/" + timeForFileName + "_optionals1.csv",
+		},
+		&infra.ParallelQubitArg{
+			Qubits: optionals2List,
+			Path:   "./outputs/" + timeForFileName + "_optionals2.csv",
+		},
 	)
 
-	infra.PararellProcessQubitCsv(pararellQubitArgs)
+	infra.ParallelProcessQubitCsv(parallelQubitArgs)
 
 	err := infra.WriteMultipleQubitCsv(
 		multipleQubits,

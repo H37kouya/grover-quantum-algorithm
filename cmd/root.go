@@ -21,7 +21,6 @@ func NewCmdRoot() *cobra.Command {
 	cmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.cmd-test.yaml)")
 	cmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 
-	cmd.AddCommand(NewCmdShow())
 	cmd.AddCommand(New2qubitExecute())
 	cmd.AddCommand(NewNqubitCsvExecute())
 	cmd.AddCommand(NewNqubitTimesExecute())
