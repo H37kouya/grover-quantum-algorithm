@@ -61,7 +61,10 @@ func NewNqubitTimesExecute() *cobra.Command {
 }
 
 func NewNqubitTimesAllExecute() *cobra.Command {
-	type Options struct{}
+	type Options struct {
+		Min int `validate:"min=2,max=30"`
+		Max int `validate:"min=2,max=30"`
+	}
 
 	var (
 		o = &Options{}
@@ -74,11 +77,14 @@ func NewNqubitTimesAllExecute() *cobra.Command {
 			return validateParams(*o)
 		},
 		Run: func(cmd *cobra.Command, args []string) {
-			usecase.FixedNQubitTimesAllUsecase()
+			usecase.FixedNQubitTimesAllUsecase(o.Min, o.Max)
 		},
 		SilenceErrors: true,
 		SilenceUsage:  true,
 	}
+
+	cmd.Flags().IntVarP(&o.Min, "min", "s", 4, "最小値")
+	cmd.Flags().IntVarP(&o.Max, "max", "e", 25, "最大値")
 
 	return cmd
 }
