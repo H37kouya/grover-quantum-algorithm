@@ -7,13 +7,19 @@ import (
 	"math"
 )
 
-func FixedNQubitTimesAllUsecase() {
+func FixedNQubitTimesAllUsecase(min int, max int) {
+	if min != 0 {
+		min = 4
+	}
+	if max != 0 {
+		max = 25
+	}
 	/**
 	 * Memory
 	 * 25: 2GB
 	 * 26: 4GB
 	 */
-	for i := 4; i <= 27; i++ {
+	for i := min; i <= max; i++ {
 		FixedNQubitTimesUsecase(i)
 	}
 }
