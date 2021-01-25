@@ -29,7 +29,7 @@ func FixedNQubitTimesUsecase(n int) {
 
 	qubits := make(model.Qubits, int(math.Pow(2.0, float64(n))))
 	for i := 0; i < len(qubits); i++ {
-		qubits[i] = model.Qubit(complex(1, 0))
+		qubits[i] = model.Qubit(complex(1, 1))
 	}
 	qubits = *qubits.Normalize()
 

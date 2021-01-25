@@ -18,37 +18,31 @@ func RandomNQubitCsvUsecase(n int, qubitPlus model.Qubit, loop int) {
 
 	timeForFileName := lib.GetTimeForFileName()
 	targets := []int{1}
-	beforeQubits := qubits
 
-	targetQubitList := make(model.Qubits, loop)
-	qubitAbsMaxList := make(model.Qubits, loop)
-	qubitAbsMinList := make(model.Qubits, loop)
-	optionals1List := make(model.Qubits, loop)
-	optionals2List := make(model.Qubits, loop)
+	newQubitsTransitionData := make(model.QubitsTransition, 0, loop)
+	newQubitsTransitionData = append(newQubitsTransitionData, qubits)
+	for i := 1; i < loop; i++ {
+		newQubits := lib.GroverQuantumSearch(&newQubitsTransitionData[i-1], targets)
+		newQubitsTransitionData[i] = *newQubits
+	}
+
 	maxIdx := qubits.MaxIdx()
 	minIdx := qubits.MinIdx()
 
-	targetQubitList[0] = qubits[targets[0]]
-	qubitAbsMaxList[0] = qubits[maxIdx]
-	qubitAbsMinList[0] = qubits[minIdx]
-	for i := 1; i < loop; i++ {
-		newQubits := *lib.GroverQuantumSearch(&beforeQubits, targets)
-		targetQubitList[i] = newQubits[targets[0]]
-		qubitAbsMaxList[i] = newQubits[maxIdx]
-		qubitAbsMinList[i] = newQubits[minIdx]
-		optionals1List[i] = newQubits[targets[0]+1]
-		optionals2List[i] = newQubits[targets[0]+2]
+	targetQubitTransitionData := newQubitsTransitionData.Column(targets[0])
+	qubitTransitionAbsMax := newQubitsTransitionData.Column(maxIdx)
+	qubitTransitionAbsMin := newQubitsTransitionData.Column(minIdx)
+	qubitTransitionOptional1 := newQubitsTransitionData.Column(targets[0] + 1)
+	qubitTransitionOptional2 := newQubitsTransitionData.Column(targets[0] + 2)
 
-		beforeQubits = newQubits
-	}
-	multipleQubits := make([]*model.Qubits, 0, 5)
+	multipleQubits := make([][]model.Qubit, 0, 5)
 	multipleQubits = append(
 		multipleQubits,
-		&targetQubitList,
-		&qubitAbsMaxList,
-		&qubitAbsMinList,
-		&optionals1List,
-		&optionals2List,
+		targetQubitTransitionData,
+		qubitTransitionAbsMax,
+		qubitTransitionAbsMin,
+		qubitTransitionOptional1,
+		qubitTransitionOptional2,
 	)
 
 	parallelQubitArgs := make([]*infra.ParallelQubitArg, 0, 6)
@@ -58,23 +52,23 @@ func RandomNQubitCsvUsecase(n int, qubitPlus model.Qubit, loop int) {
 			Path:   "./outputs/" + timeForFileName + "_original.csv",
 		},
 		&infra.ParallelQubitArg{
-			Qubits: targetQubitList,
+			Qubits: targetQubitTransitionData,
 			Path:   "./outputs/" + timeForFileName + "_target.csv",
 		},
 		&infra.ParallelQubitArg{
-			Qubits: qubitAbsMaxList,
+			Qubits: qubitTransitionAbsMax,
 			Path:   "./outputs/" + timeForFileName + "_max.csv",
 		},
 		&infra.ParallelQubitArg{
-			Qubits: qubitAbsMinList,
+			Qubits: qubitTransitionAbsMin,
 			Path:   "./outputs/" + timeForFileName + "_min.csv",
 		},
 		&infra.ParallelQubitArg{
-			Qubits: optionals1List,
+			Qubits: qubitTransitionOptional1,
 			Path:   "./outputs/" + timeForFileName + "_optionals1.csv",
 		},
 		&infra.ParallelQubitArg{
-			Qubits: optionals2List,
+			Qubits: qubitTransitionOptional2,
 			Path:   "./outputs/" + timeForFileName + "_optionals2.csv",
 		},
 	)

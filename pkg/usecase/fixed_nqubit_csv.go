@@ -13,33 +13,24 @@ func FixedNQubitCsvUsecase(n int) {
 
 	qubits := make(model.Qubits, int(math.Pow(2.0, float64(n))))
 	for i := 0; i < len(qubits); i++ {
-		qubits[i] = model.Qubit(complex(1, 0))
+		qubits[i] = model.Qubit(complex(1, 1))
 	}
 	qubits = *qubits.Normalize()
 
 	timeForFileName := lib.GetTimeForFileName()
 	targets := []int{1}
-	newQubitTransitionData := make([]model.Qubits, loop)
-	newQubitTransitionData[0] = qubits
+	newQubitsTransitionData := make(model.QubitsTransition, 0, loop)
+	newQubitsTransitionData = append(newQubitsTransitionData, qubits)
 
 	for i := 1; i < loop; i++ {
-		newQubits := lib.GroverQuantumSearch(&newQubitTransitionData[i-1], targets)
-		newQubitTransitionData[i] = *newQubits
+		newQubits := lib.GroverQuantumSearch(&newQubitsTransitionData[i-1], targets)
+		newQubitsTransitionData[i] = *newQubits
 	}
 
-	targetQubitList := make(model.Qubits, loop)
-	qubitNo2List := make(model.Qubits, loop)
-	qubitNo3List := make(model.Qubits, loop)
-	qubitNo4List := make(model.Qubits, loop)
-	qubitAbsMaxList := make(model.Qubits, loop)
-	maxIdx := qubits.MaxIdx()
-	for i, q := range newQubitTransitionData {
-		targetQubitList[i] = q[targets[0]]
-		qubitNo2List[i] = q[1]
-		qubitNo3List[i] = q[2]
-		qubitNo4List[i] = q[3]
-		qubitAbsMaxList[i] = q[maxIdx]
-	}
+	targetQubitTransitionData := newQubitsTransitionData.Column(targets[0])
+	qubitTransitionNo2 := newQubitsTransitionData.Column(1)
+	qubitTransitionNo3 := newQubitsTransitionData.Column(2)
+	qubitTransitionNo4 := newQubitsTransitionData.Column(3)
 
 	parallelQubitArgs := make([]*infra.ParallelQubitArg, 0, 5)
 	parallelQubitArgs = append(parallelQubitArgs,
@@ -48,24 +39,20 @@ func FixedNQubitCsvUsecase(n int) {
 			Path:   "./outputs/" + timeForFileName + "_original.csv",
 		},
 		&infra.ParallelQubitArg{
-			Qubits: targetQubitList,
+			Qubits: targetQubitTransitionData,
 			Path:   "./outputs/" + timeForFileName + "_target.csv",
 		},
 		&infra.ParallelQubitArg{
-			Qubits: qubitNo2List,
+			Qubits: qubitTransitionNo2,
 			Path:   "./outputs/" + timeForFileName + "_2.csv",
 		},
 		&infra.ParallelQubitArg{
-			Qubits: qubitNo3List,
+			Qubits: qubitTransitionNo3,
 			Path:   "./outputs/" + timeForFileName + "_3.csv",
 		},
 		&infra.ParallelQubitArg{
-			Qubits: qubitNo4List,
+			Qubits: qubitTransitionNo4,
 			Path:   "./outputs/" + timeForFileName + "_4.csv",
-		},
-		&infra.ParallelQubitArg{
-			Qubits: qubitNo4List,
-			Path:   "./outputs/" + timeForFileName + "_max.csv",
 		},
 	)
 

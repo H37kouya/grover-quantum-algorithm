@@ -9,7 +9,7 @@ import (
 )
 
 func WriteMultipleQubitCsv(
-	multipleQubits []*model.Qubits,
+	multipleQubits [][]model.Qubit,
 	path string,
 ) error {
 	fp, err := os.Create(path)
@@ -63,14 +63,14 @@ func (d shouldMultipleWriteData) toCsvRecord() []string {
 	return results
 }
 
-func writableMultipleQubitData(multipleQubits []*model.Qubits, header shouldMultipleWriteData) [][]string {
+func writableMultipleQubitData(multipleQubits [][]model.Qubit, header shouldMultipleWriteData) [][]string {
 	newRecords := make([][]string, 0, 0)
 	newRecords = append(newRecords, header.toCsvRecord())
 
-	for newRecordIdx := 1; newRecordIdx < len(*multipleQubits[0]); newRecordIdx++ {
+	for newRecordIdx := 1; newRecordIdx < len(multipleQubits[0]); newRecordIdx++ {
 		data := make([]shouldMultipleChildData, 0, len(multipleQubits))
 		for multipleQubitsIdx := 0; multipleQubitsIdx < len(multipleQubits); multipleQubitsIdx++ {
-			qubit := (*multipleQubits[multipleQubitsIdx])[newRecordIdx]
+			qubit := (multipleQubits[multipleQubitsIdx])[newRecordIdx]
 			data = append(data, shouldMultipleChildData{
 				Real: strconv.FormatFloat(real(qubit), 'f', -1, 64),
 				Imag: strconv.FormatFloat(imag(qubit), 'f', -1, 64),

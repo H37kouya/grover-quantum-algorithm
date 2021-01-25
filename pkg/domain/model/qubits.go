@@ -40,16 +40,19 @@ func (qubits Qubits) SumAbsOfSquares() float64 {
 	return sum
 }
 
+// Average 平均値
 func (qubits Qubits) Average() Qubit {
 	sumQubit := qubits.Sum()
 	lenQubit := len(qubits)
 	return sumQubit / Qubit(complex(float64(lenQubit), float64(0)))
 }
 
+// Max 最大値
 func (qubits Qubits) Max() Qubit {
 	return qubits[qubits.MaxIdx()]
 }
 
+// MaxIdx 最大値の添字を取得
 func (qubits Qubits) MaxIdx() int {
 	max := Qubit(complex(float64(0), float64(0)))
 	maxIdx := 0
