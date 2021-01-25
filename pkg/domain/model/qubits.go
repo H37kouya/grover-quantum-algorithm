@@ -10,7 +10,14 @@ type Qubits []Qubit
 
 // MakeNQubits NQubitsを生成する
 func MakeNQubits(n int) Qubits {
-	return make(Qubits, int(math.Pow(2.0, float64(n))))
+	return make(Qubits, 0, int(math.Pow(2.0, float64(n))))
+}
+
+// Average 平均値
+func (qubits Qubits) Average() Qubit {
+	sumQubit := qubits.Sum()
+	lenQubit := len(qubits)
+	return sumQubit / Qubit(complex(float64(lenQubit), float64(0)))
 }
 
 // Sum 合計値を求める
@@ -44,13 +51,6 @@ func (qubits Qubits) SumAbsOfSquares() float64 {
 	}
 
 	return sum
-}
-
-// Average 平均値
-func (qubits Qubits) Average() Qubit {
-	sumQubit := qubits.Sum()
-	lenQubit := len(qubits)
-	return sumQubit / Qubit(complex(float64(lenQubit), float64(0)))
 }
 
 // Max 最大値
