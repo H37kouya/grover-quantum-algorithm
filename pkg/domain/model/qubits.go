@@ -8,6 +8,19 @@ import (
 
 type Qubits []Qubit
 
+// MakeNQubits NQubitsを生成する
+func MakeNQubits(n int) Qubits {
+	return make(Qubits, 0, int(math.Pow(2.0, float64(n))))
+}
+
+// Average 平均値
+func (qubits Qubits) Average() Qubit {
+	sumQubit := qubits.Sum()
+	lenQubit := len(qubits)
+	return sumQubit / Qubit(complex(float64(lenQubit), float64(0)))
+}
+
+// Sum 合計値を求める
 func (qubits Qubits) Sum() Qubit {
 	sum := Qubit(complex(float64(0), float64(0)))
 
@@ -40,16 +53,12 @@ func (qubits Qubits) SumAbsOfSquares() float64 {
 	return sum
 }
 
-func (qubits Qubits) Average() Qubit {
-	sumQubit := qubits.Sum()
-	lenQubit := len(qubits)
-	return sumQubit / Qubit(complex(float64(lenQubit), float64(0)))
-}
-
+// Max 最大値
 func (qubits Qubits) Max() Qubit {
 	return qubits[qubits.MaxIdx()]
 }
 
+// MaxIdx 最大値の添字を取得
 func (qubits Qubits) MaxIdx() int {
 	max := Qubit(complex(float64(0), float64(0)))
 	maxIdx := 0
@@ -100,6 +109,7 @@ func (qubits *Qubits) MapPointer(callback func(Qubit, int) Qubit) *Qubits {
 	return qubits
 }
 
+// Normalize 正規化する
 func (qubits Qubits) Normalize() *Qubits {
 	total := 0.0
 

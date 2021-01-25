@@ -10,7 +10,7 @@ import (
 )
 
 type ParallelQubitArg struct {
-	Qubits model.Qubits
+	Qubits []model.Qubit
 	Path   string
 }
 
@@ -27,7 +27,7 @@ func ParallelProcessQubitCsv(parallelQubitArg []*ParallelQubitArg) {
 }
 
 func WriteQubitCsv(
-	qubits *model.Qubits,
+	qubits *[]model.Qubit,
 	path string,
 ) error {
 	fp, err := os.Create(path)
@@ -68,7 +68,7 @@ func (d shouldWriteData) toCsvRecord() []string {
 	}
 }
 
-func writableQubitData(qubits *model.Qubits, header shouldWriteData) [][]string {
+func writableQubitData(qubits *[]model.Qubit, header shouldWriteData) [][]string {
 	newRecords := make([][]string, len(*qubits)+1)
 	newRecords[0] = header.toCsvRecord()
 
