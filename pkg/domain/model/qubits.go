@@ -8,6 +8,12 @@ import (
 
 type Qubits []Qubit
 
+// MakeNQubits NQubitsを生成する
+func MakeNQubits(n int) Qubits {
+	return make(Qubits, int(math.Pow(2.0, float64(n))))
+}
+
+// Sum 合計値を求める
 func (qubits Qubits) Sum() Qubit {
 	sum := Qubit(complex(float64(0), float64(0)))
 
@@ -103,6 +109,7 @@ func (qubits *Qubits) MapPointer(callback func(Qubit, int) Qubit) *Qubits {
 	return qubits
 }
 
+// Normalize 正規化する
 func (qubits Qubits) Normalize() *Qubits {
 	total := 0.0
 

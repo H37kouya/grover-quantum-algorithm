@@ -9,9 +9,26 @@ import (
 	"github.com/spf13/viper"
 )
 
+type Cmd struct{}
+
 var cfgFile string
 
-func NewCmdRoot() *cobra.Command {
+// NewCmd
+func NewCmd() Cmd {
+	return Cmd{}
+}
+
+func (c Cmd) Execute() {
+	cmd := c.NewCmdRoot()
+	cmd.SetOut(os.Stdout)
+	if err := cmd.Execute(); err != nil {
+		cmd.SetOut(os.Stderr)
+		cmd.Println(err)
+		os.Exit(1)
+	}
+}
+
+func (c Cmd) NewCmdRoot() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "grover",
 		Short: "A brief description of your application",
@@ -28,16 +45,6 @@ func NewCmdRoot() *cobra.Command {
 	cmd.AddCommand(NewRandomNqubitTimesExecute())
 	cmd.AddCommand(NewRandomNqubitCsvExecute())
 	return cmd
-}
-
-func Execute() {
-	cmd := NewCmdRoot()
-	cmd.SetOut(os.Stdout)
-	if err := cmd.Execute(); err != nil {
-		cmd.SetOut(os.Stderr)
-		cmd.Println(err)
-		os.Exit(1)
-	}
 }
 
 func initConfig() {
