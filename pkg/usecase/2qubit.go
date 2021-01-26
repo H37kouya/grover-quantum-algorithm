@@ -5,6 +5,7 @@ import (
 	"grover-quantum-search/pkg/domain/model"
 	"grover-quantum-search/pkg/infra"
 	"grover-quantum-search/pkg/lib"
+	"grover-quantum-search/pkg/lib/time"
 )
 
 func Fixed2QubitUsecase() {
@@ -15,7 +16,7 @@ func Fixed2QubitUsecase() {
 		model.Qubit(complex(0.5, 0)),
 	}
 	loop := 4
-	timeForFileName := lib.GetTimeForFileName()
+	timeForFileName := time.GetTimeForFileName()
 	targets := []int{1}
 	newQubitsTransitionData := make(model.QubitsTransition, 0, loop)
 	newQubitsTransitionData = append(newQubitsTransitionData, qubits)

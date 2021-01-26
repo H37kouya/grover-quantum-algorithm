@@ -1,6 +1,7 @@
 package model
 
 import (
+	"math"
 	"testing"
 )
 
@@ -183,6 +184,110 @@ func TestQubits_Sum(t *testing.T) {
 
 			if tt.qubits.Sum() != tt.want {
 				t.Errorf("Qubits = %+v, Qubit.Sum() = %v, want %v", tt.qubits, tt.qubits.Sum(), tt.want)
+			}
+		})
+	}
+}
+
+func TestQubits_Normalize(t *testing.T) {
+	type testCase struct {
+		name   string
+		qubits Qubits
+		want   Qubits
+	}
+
+	tests := []testCase{
+		{
+			name: "{(1 + i), (-1 - i)} を正規化した値である",
+			qubits: func() Qubits {
+				qubits := make(Qubits, 0, 2)
+				qubits = append(qubits, Qubit(complex(float64(1), float64(1))))
+				qubits = append(qubits, Qubit(complex(float64(-1), float64(-1))))
+				return qubits
+			}(),
+			want: func() Qubits {
+				qubits := make(Qubits, 0, 2)
+				qubits = append(qubits, Qubit(complex(0.5, 0.5)))
+				qubits = append(qubits, Qubit(complex(-0.5, -0.5)))
+				return qubits
+			}(),
+		},
+		{
+			name: "1 * 4 を正規化した値である",
+			qubits: func() Qubits {
+				qubits := make(Qubits, 4)
+				for i := range qubits {
+					qubits[i] = Qubit(complex(float64(1), 0))
+				}
+				return qubits
+			}(),
+			want: func() Qubits {
+				qubits := make(Qubits, 4)
+				for i := range qubits {
+					qubits[i] = Qubit(complex(0.5, 0))
+				}
+				return qubits
+			}(),
+		},
+		{
+			name: "(1 + i) * 4 を正規化した値である",
+			qubits: func() Qubits {
+				qubits := make(Qubits, 4)
+				for i := range qubits {
+					qubits[i] = Qubit(complex(float64(1), float64(1)))
+				}
+				return qubits
+			}(),
+			want: func() Qubits {
+				qubits := make(Qubits, 4)
+				for i := range qubits {
+					qubits[i] = Qubit(complex(0.5/math.Sqrt(2.0), 0.5/math.Sqrt(2.0)))
+				}
+				return qubits
+			}(),
+		},
+		{
+			name: "2 * 16 を正規化した値である",
+			qubits: func() Qubits {
+				qubits := make(Qubits, 16)
+				for i := range qubits {
+					qubits[i] = Qubit(complex(float64(2), 0))
+				}
+				return qubits
+			}(),
+			want: func() Qubits {
+				qubits := make(Qubits, 16)
+				for i := range qubits {
+					qubits[i] = Qubit(complex(0.25, 0))
+				}
+				return qubits
+			}(),
+		},
+		{
+			name: "(2 - i2) * 16 を正規化した値である",
+			qubits: func() Qubits {
+				qubits := make(Qubits, 16)
+				for i := range qubits {
+					qubits[i] = Qubit(complex(float64(2), float64(-2)))
+				}
+				return qubits
+			}(),
+			want: func() Qubits {
+				qubits := make(Qubits, 16)
+				for i := range qubits {
+					qubits[i] = Qubit(complex(math.Sqrt(2)/8.0, -1*math.Sqrt(2)/8.0))
+				}
+				return qubits
+			}(),
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+
+			if !(*tt.qubits.Normalize()).Equal(tt.want) {
+				t.Errorf("Qubits = %+v, Qubit.Normalize() = %v, want %v", tt.qubits, *tt.qubits.Normalize(), tt.want)
 			}
 		})
 	}

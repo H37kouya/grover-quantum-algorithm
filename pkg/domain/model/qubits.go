@@ -20,6 +20,21 @@ func (qubits Qubits) Average() Qubit {
 	return sumQubit / Qubit(complex(float64(lenQubit), float64(0)))
 }
 
+func (qubits Qubits) Equal(other Qubits) bool {
+	// 要素数と容量が一致するか
+	if len(qubits) != len(other) || cap(qubits) != cap(other) {
+		return false
+	}
+
+	for i := 0; i < len(qubits); i++ {
+		if !qubits[i].Equal(other[i]) {
+			return false
+		}
+	}
+
+	return true
+}
+
 // Sum 合計値を求める
 func (qubits Qubits) Sum() Qubit {
 	sum := Qubit(complex(float64(0), float64(0)))
