@@ -2,15 +2,16 @@ package model
 
 import (
 	"crypto/rand"
+	"grover-quantum-search/pkg/domain/valueObject"
 	"math"
 	"math/big"
 )
 
 type Qubits []Qubit
 
-// MakeNQubits NQubitsを生成する
-func MakeNQubits(n int) Qubits {
-	return make(Qubits, 0, int(math.Pow(2.0, float64(n))))
+// MakeNQubits NQubitsを生成する  要素数 0, 容量 2^n
+func MakeNQubits(n valueObject.N) Qubits {
+	return make(Qubits, 0, n.ElementCount())
 }
 
 // Average 平均値
@@ -138,6 +139,19 @@ func (qubits Qubits) Normalize() *Qubits {
 	return qubits.Map(func(qubit Qubit, i int) Qubit {
 		return qubit / Qubit(complex(total, 0))
 	})
+}
+
+func RandomNQubit(n valueObject.N) Qubits {
+	newQubits := make(Qubits, 0, n.ElementCount())
+
+	for i := 0; i < cap(newQubits); i++ {
+		r1, _ := rand.Int(rand.Reader, big.NewInt(1e10))
+		r2, _ := rand.Int(rand.Reader, big.NewInt(1e10))
+
+		newQubits = append(newQubits, Qubit(complex(float64(r1.Int64()-1e10/2), float64(r2.Int64()-1e10/2))))
+	}
+
+	return newQubits
 }
 
 func RandomQubits(len int) Qubits {

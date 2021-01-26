@@ -4,17 +4,22 @@ import (
 	"fmt"
 	"grover-quantum-search/pkg/domain/model"
 	"grover-quantum-search/pkg/domain/service"
+	"grover-quantum-search/pkg/domain/valueObject"
 	"grover-quantum-search/pkg/infra"
 	"grover-quantum-search/pkg/lib/time"
-	"math"
 )
 
 func FixedNQubitCsvUsecase(n int) {
 	loop := 3000
 
-	qubits := make(model.Qubits, int(math.Pow(2.0, float64(n))))
-	for i := 0; i < len(qubits); i++ {
-		qubits[i] = model.Qubit(complex(1, 1))
+	newN, err := valueObject.NewN(n)
+	if err != nil {
+		panic(err)
+	}
+
+	qubits := model.MakeNQubits(newN)
+	for i := 0; i < cap(qubits); i++ {
+		qubits = append(qubits, model.Qubit(complex(1, 1)))
 	}
 	qubits = *qubits.Normalize()
 
