@@ -3,7 +3,7 @@ package usecase
 import (
 	"fmt"
 	"grover-quantum-search/pkg/domain/model"
-	"grover-quantum-search/pkg/lib"
+	"grover-quantum-search/pkg/domain/service"
 	"math"
 )
 
@@ -37,7 +37,7 @@ func FixedNQubitTimesUsecase(n int) {
 	beforeQubits := qubits
 
 	for i := 1; i < loop; i++ {
-		newQubits := *lib.GroverQuantumSearch(&beforeQubits, targets)
+		newQubits := *service.GroverQuantumSearch(&beforeQubits, targets)
 
 		if beforeQubits[targets[0]].Abs() > newQubits[targets[0]].Abs() {
 			fmt.Println(n, i-1)

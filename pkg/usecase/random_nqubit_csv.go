@@ -3,8 +3,8 @@ package usecase
 import (
 	"fmt"
 	"grover-quantum-search/pkg/domain/model"
+	"grover-quantum-search/pkg/domain/service"
 	"grover-quantum-search/pkg/infra"
-	"grover-quantum-search/pkg/lib"
 	"grover-quantum-search/pkg/lib/time"
 	"math"
 )
@@ -23,7 +23,7 @@ func RandomNQubitCsvUsecase(n int, qubitPlus model.Qubit, loop int) {
 	newQubitsTransitionData := make(model.QubitsTransition, 0, loop)
 	newQubitsTransitionData = append(newQubitsTransitionData, qubits)
 	for i := 1; i < loop; i++ {
-		newQubits := lib.GroverQuantumSearch(&newQubitsTransitionData[i-1], targets)
+		newQubits := service.GroverQuantumSearch(&newQubitsTransitionData[i-1], targets)
 		newQubitsTransitionData[i] = *newQubits
 	}
 

@@ -1,4 +1,4 @@
-package lib
+package service
 
 import (
 	"grover-quantum-search/pkg/domain/model"
