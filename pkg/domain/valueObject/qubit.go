@@ -7,6 +7,10 @@ import (
 
 type Qubit complex128
 
+func NewQubit(r, i float64) Qubit {
+	return Qubit(complex(r, i))
+}
+
 func (qubit Qubit) ToComplex128() complex128 {
 	return complex128(qubit)
 }

@@ -18,7 +18,7 @@ func MakeNQubits(n valueObject.N) Qubits {
 func (qubits Qubits) Average() valueObject.Qubit {
 	sumQubit := qubits.Sum()
 	lenQubit := len(qubits)
-	return sumQubit / valueObject.Qubit(complex(float64(lenQubit), float64(0)))
+	return sumQubit / valueObject.NewQubit(float64(lenQubit), 0.0)
 }
 
 func (qubits Qubits) Equal(other Qubits) bool {
@@ -38,7 +38,7 @@ func (qubits Qubits) Equal(other Qubits) bool {
 
 // Sum 合計値を求める
 func (qubits Qubits) Sum() valueObject.Qubit {
-	sum := valueObject.Qubit(complex(float64(0), float64(0)))
+	sum := valueObject.NewQubit(0.0, 0.0)
 
 	for _, qubit := range qubits {
 		sum += qubit
@@ -49,7 +49,7 @@ func (qubits Qubits) Sum() valueObject.Qubit {
 
 // SumOfSquares 二乗の和を求める
 func (qubits Qubits) SumOfSquares() valueObject.Qubit {
-	sum := valueObject.Qubit(complex(float64(0), float64(0)))
+	sum := valueObject.NewQubit(0.0, 0.0)
 
 	for _, qubit := range qubits {
 		sum += qubit * qubit
@@ -76,7 +76,7 @@ func (qubits Qubits) Max() valueObject.Qubit {
 
 // MaxIdx 最大値の添字を取得
 func (qubits Qubits) MaxIdx() int {
-	max := valueObject.Qubit(complex(float64(0), float64(0)))
+	max := valueObject.NewQubit(0.0, 0.0)
 	maxIdx := 0
 
 	for idx, qubit := range qubits {
@@ -137,7 +137,7 @@ func (qubits Qubits) Normalize() *Qubits {
 	total = math.Sqrt(total)
 
 	return qubits.Map(func(qubit valueObject.Qubit, i int) valueObject.Qubit {
-		return qubit / valueObject.Qubit(complex(total, 0))
+		return qubit / valueObject.NewQubit(total, 0)
 	})
 }
 
@@ -148,20 +148,20 @@ func RandomNQubit(n valueObject.N) Qubits {
 		r1, _ := rand.Int(rand.Reader, big.NewInt(1e10))
 		r2, _ := rand.Int(rand.Reader, big.NewInt(1e10))
 
-		newQubits = append(newQubits, valueObject.Qubit(complex(float64(r1.Int64()-1e10/2), float64(r2.Int64()-1e10/2))))
+		newQubits = append(newQubits, valueObject.NewQubit(float64(r1.Int64()-1e10/2), float64(r2.Int64()-1e10/2)))
 	}
 
-	return newQubits
+	return RandomQubits(n.ElementCount())
 }
 
 func RandomQubits(len int) Qubits {
-	newQubits := make(Qubits, len)
+	newQubits := make(Qubits, 0, len)
 
-	for i := 0; i < len; i++ {
+	for i := 0; i < cap(newQubits); i++ {
 		r1, _ := rand.Int(rand.Reader, big.NewInt(1e10))
 		r2, _ := rand.Int(rand.Reader, big.NewInt(1e10))
 
-		newQubits[i] = valueObject.Qubit(complex(float64(r1.Int64()-1e10/2), float64(r2.Int64()-1e10/2)))
+		newQubits = append(newQubits, valueObject.NewQubit(float64(r1.Int64()-1e10/2), float64(r2.Int64()-1e10/2)))
 	}
 
 	return newQubits
