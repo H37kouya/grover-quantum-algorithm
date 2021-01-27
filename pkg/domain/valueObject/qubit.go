@@ -1,4 +1,4 @@
-package model
+package valueObject
 
 import (
 	"grover-quantum-search/pkg/lib/num"

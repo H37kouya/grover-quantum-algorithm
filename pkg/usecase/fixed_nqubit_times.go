@@ -2,7 +2,7 @@ package usecase
 
 import (
 	"fmt"
-	"grover-quantum-search/pkg/domain/model"
+	"grover-quantum-search/pkg/domain/collection"
 	"grover-quantum-search/pkg/domain/service"
 	"grover-quantum-search/pkg/domain/valueObject"
 )
@@ -32,9 +32,9 @@ func FixedNQubitTimesUsecase(n int) {
 		panic(err)
 	}
 
-	qubits := model.MakeNQubits(newN)
+	qubits := collection.MakeNQubits(newN)
 	for i := 0; i < cap(qubits); i++ {
-		qubits = append(qubits, model.Qubit(complex(1, 1)))
+		qubits = append(qubits, valueObject.Qubit(complex(1, 1)))
 	}
 	qubits = *qubits.Normalize()
 

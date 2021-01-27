@@ -1,4 +1,4 @@
-package model
+package collection
 
 import (
 	"crypto/rand"
@@ -7,7 +7,7 @@ import (
 	"math/big"
 )
 
-type Qubits []Qubit
+type Qubits []valueObject.Qubit
 
 // MakeNQubits NQubitsを生成する  要素数 0, 容量 2^n
 func MakeNQubits(n valueObject.N) Qubits {
@@ -15,10 +15,10 @@ func MakeNQubits(n valueObject.N) Qubits {
 }
 
 // Average 平均値
-func (qubits Qubits) Average() Qubit {
+func (qubits Qubits) Average() valueObject.Qubit {
 	sumQubit := qubits.Sum()
 	lenQubit := len(qubits)
-	return sumQubit / Qubit(complex(float64(lenQubit), float64(0)))
+	return sumQubit / valueObject.Qubit(complex(float64(lenQubit), float64(0)))
 }
 
 func (qubits Qubits) Equal(other Qubits) bool {
@@ -37,8 +37,8 @@ func (qubits Qubits) Equal(other Qubits) bool {
 }
 
 // Sum 合計値を求める
-func (qubits Qubits) Sum() Qubit {
-	sum := Qubit(complex(float64(0), float64(0)))
+func (qubits Qubits) Sum() valueObject.Qubit {
+	sum := valueObject.Qubit(complex(float64(0), float64(0)))
 
 	for _, qubit := range qubits {
 		sum += qubit
@@ -48,8 +48,8 @@ func (qubits Qubits) Sum() Qubit {
 }
 
 // SumOfSquares 二乗の和を求める
-func (qubits Qubits) SumOfSquares() Qubit {
-	sum := Qubit(complex(float64(0), float64(0)))
+func (qubits Qubits) SumOfSquares() valueObject.Qubit {
+	sum := valueObject.Qubit(complex(float64(0), float64(0)))
 
 	for _, qubit := range qubits {
 		sum += qubit * qubit
@@ -70,13 +70,13 @@ func (qubits Qubits) SumAbsOfSquares() float64 {
 }
 
 // Max 最大値
-func (qubits Qubits) Max() Qubit {
+func (qubits Qubits) Max() valueObject.Qubit {
 	return qubits[qubits.MaxIdx()]
 }
 
 // MaxIdx 最大値の添字を取得
 func (qubits Qubits) MaxIdx() int {
-	max := Qubit(complex(float64(0), float64(0)))
+	max := valueObject.Qubit(complex(float64(0), float64(0)))
 	maxIdx := 0
 
 	for idx, qubit := range qubits {
@@ -89,7 +89,7 @@ func (qubits Qubits) MaxIdx() int {
 	return maxIdx
 }
 
-func (qubits Qubits) Min() Qubit {
+func (qubits Qubits) Min() valueObject.Qubit {
 	return qubits[qubits.MinIdx()]
 }
 
@@ -107,7 +107,7 @@ func (qubits Qubits) MinIdx() int {
 	return minIdx
 }
 
-func (qubits Qubits) Map(callback func(Qubit, int) Qubit) *Qubits {
+func (qubits Qubits) Map(callback func(valueObject.Qubit, int) valueObject.Qubit) *Qubits {
 	newQubits := make(Qubits, len(qubits))
 
 	for idx, qubit := range qubits {
@@ -117,7 +117,7 @@ func (qubits Qubits) Map(callback func(Qubit, int) Qubit) *Qubits {
 	return &newQubits
 }
 
-func (qubits *Qubits) MapPointer(callback func(Qubit, int) Qubit) *Qubits {
+func (qubits *Qubits) MapPointer(callback func(valueObject.Qubit, int) valueObject.Qubit) *Qubits {
 	for idx, qubit := range *qubits {
 		qubit = callback(qubit, idx)
 	}
@@ -136,8 +136,8 @@ func (qubits Qubits) Normalize() *Qubits {
 
 	total = math.Sqrt(total)
 
-	return qubits.Map(func(qubit Qubit, i int) Qubit {
-		return qubit / Qubit(complex(total, 0))
+	return qubits.Map(func(qubit valueObject.Qubit, i int) valueObject.Qubit {
+		return qubit / valueObject.Qubit(complex(total, 0))
 	})
 }
 
@@ -148,7 +148,7 @@ func RandomNQubit(n valueObject.N) Qubits {
 		r1, _ := rand.Int(rand.Reader, big.NewInt(1e10))
 		r2, _ := rand.Int(rand.Reader, big.NewInt(1e10))
 
-		newQubits = append(newQubits, Qubit(complex(float64(r1.Int64()-1e10/2), float64(r2.Int64()-1e10/2))))
+		newQubits = append(newQubits, valueObject.Qubit(complex(float64(r1.Int64()-1e10/2), float64(r2.Int64()-1e10/2))))
 	}
 
 	return newQubits
@@ -161,7 +161,7 @@ func RandomQubits(len int) Qubits {
 		r1, _ := rand.Int(rand.Reader, big.NewInt(1e10))
 		r2, _ := rand.Int(rand.Reader, big.NewInt(1e10))
 
-		newQubits[i] = Qubit(complex(float64(r1.Int64()-1e10/2), float64(r2.Int64()-1e10/2)))
+		newQubits[i] = valueObject.Qubit(complex(float64(r1.Int64()-1e10/2), float64(r2.Int64()-1e10/2)))
 	}
 
 	return newQubits

@@ -2,7 +2,7 @@ package cmd
 
 import (
 	"github.com/spf13/cobra"
-	"grover-quantum-search/pkg/domain/model"
+	"grover-quantum-search/pkg/domain/valueObject"
 	"grover-quantum-search/pkg/usecase"
 )
 
@@ -110,7 +110,7 @@ func NewRandomNqubitCsvExecute() *cobra.Command {
 		Run: func(cmd *cobra.Command, args []string) {
 			usecase.RandomNQubitCsvUsecase(
 				o.Optint,
-				model.Qubit(complex(o.PlusReal, o.PlusImag)),
+				valueObject.Qubit(complex(o.PlusReal, o.PlusImag)),
 				o.Loop,
 			)
 		},

@@ -2,25 +2,26 @@ package usecase
 
 import (
 	"fmt"
-	"grover-quantum-search/pkg/domain/model"
+	"grover-quantum-search/pkg/domain/collection"
 	"grover-quantum-search/pkg/domain/service"
+	"grover-quantum-search/pkg/domain/valueObject"
 	"grover-quantum-search/pkg/infra"
 	"grover-quantum-search/pkg/lib/time"
 	"math"
 )
 
-func RandomNQubitCsvUsecase(n int, qubitPlus model.Qubit, loop int) {
+func RandomNQubitCsvUsecase(n int, qubitPlus valueObject.Qubit, loop int) {
 
-	qubits := model.RandomQubits(int(math.Pow(2.0, float64(n))))
+	qubits := collection.RandomQubits(int(math.Pow(2.0, float64(n))))
 	qubits = *qubits.Normalize()
-	qubits = *qubits.Map(func(qubit model.Qubit, i int) model.Qubit {
+	qubits = *qubits.Map(func(qubit valueObject.Qubit, i int) valueObject.Qubit {
 		return qubit + qubitPlus
 	})
 
 	timeForFileName := time.GetTimeForFileName()
 	targets := []int{1}
 
-	newQubitsTransitionData := make(model.QubitsTransition, 0, loop)
+	newQubitsTransitionData := make(collection.QubitsTransition, 0, loop)
 	newQubitsTransitionData = append(newQubitsTransitionData, qubits)
 	for i := 1; i < loop; i++ {
 		newQubits := service.GroverQuantumSearch(&newQubitsTransitionData[i-1], targets)
@@ -36,7 +37,7 @@ func RandomNQubitCsvUsecase(n int, qubitPlus model.Qubit, loop int) {
 	qubitTransitionOptional1 := newQubitsTransitionData.Column(targets[0] + 1)
 	qubitTransitionOptional2 := newQubitsTransitionData.Column(targets[0] + 2)
 
-	multipleQubits := make([][]model.Qubit, 0, 5)
+	multipleQubits := make([][]valueObject.Qubit, 0, 5)
 	multipleQubits = append(
 		multipleQubits,
 		targetQubitTransitionData,

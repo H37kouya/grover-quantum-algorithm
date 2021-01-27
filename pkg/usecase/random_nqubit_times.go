@@ -2,23 +2,24 @@ package usecase
 
 import (
 	"fmt"
-	"grover-quantum-search/pkg/domain/model"
+	"grover-quantum-search/pkg/domain/collection"
 	"grover-quantum-search/pkg/domain/service"
+	"grover-quantum-search/pkg/domain/valueObject"
 	"math"
 )
 
 func RandomNQubitTimesCountUsecase(n int, c int, qubitPlusReal float64, qubitPlusImag float64) {
 	for i := 0; i < c; i++ {
-		RandomNQubitTimesUsecase(n, model.Qubit(complex(qubitPlusReal, qubitPlusImag)))
+		RandomNQubitTimesUsecase(n, valueObject.Qubit(complex(qubitPlusReal, qubitPlusImag)))
 	}
 }
 
-func RandomNQubitTimesUsecase(n int, qubitPlus model.Qubit) {
+func RandomNQubitTimesUsecase(n int, qubitPlus valueObject.Qubit) {
 	loop := 100000
 
-	qubits := model.RandomQubits(int(math.Pow(2.0, float64(n))))
+	qubits := collection.RandomQubits(int(math.Pow(2.0, float64(n))))
 	qubits = *qubits.Normalize()
-	qubits = *qubits.Map(func(qubit model.Qubit, i int) model.Qubit {
+	qubits = *qubits.Map(func(qubit valueObject.Qubit, i int) valueObject.Qubit {
 		return qubit + qubitPlus
 	})
 
