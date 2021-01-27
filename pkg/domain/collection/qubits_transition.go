@@ -1,4 +1,4 @@
-package model
+package collection
 
 // QubitsTransition Qubitsの推移
 type QubitsTransition []Qubits

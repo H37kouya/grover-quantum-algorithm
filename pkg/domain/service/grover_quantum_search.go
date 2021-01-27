@@ -1,13 +1,14 @@
-package lib
+package service
 
 import (
-	"grover-quantum-search/pkg/domain/model"
+	"grover-quantum-search/pkg/domain/collection"
+	"grover-quantum-search/pkg/domain/valueObject"
 )
 
 func GroverQuantumSearch(
-	qubits *model.Qubits,
+	qubits *collection.Qubits,
 	targets []int,
-) *model.Qubits {
+) *collection.Qubits {
 	// 1 オラクルUf いわゆる、γ
 	signInversionQubits := qubitSignInversionByIdx(qubits, targets)
 
@@ -15,17 +16,17 @@ func GroverQuantumSearch(
 	signInversionQubitsAverage := signInversionQubits.Average()
 
 	// 2 P に γ を入れる
-	output := signInversionQubits.Map(func(qubit model.Qubit, _ int) model.Qubit {
+	output := signInversionQubits.Map(func(qubit valueObject.Qubit, _ int) valueObject.Qubit {
 		return -1*qubit + 2*signInversionQubitsAverage
 	})
 
 	return output
 }
 
-func qubitSignInversionByIdx(qubits *model.Qubits, idxes []int) *model.Qubits {
+func qubitSignInversionByIdx(qubits *collection.Qubits, idxes []int) *collection.Qubits {
 	qubitSignInversionTargets := qubitSignInversionTargetsType(idxes)
 
-	return qubits.Map(func(qubit model.Qubit, idx int) model.Qubit {
+	return qubits.Map(func(qubit valueObject.Qubit, idx int) valueObject.Qubit {
 		if qubitSignInversionTargets.contains(idx) {
 			return -1 * qubit
 		}

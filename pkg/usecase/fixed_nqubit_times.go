@@ -2,9 +2,9 @@ package usecase
 
 import (
 	"fmt"
-	"grover-quantum-search/pkg/domain/model"
-	"grover-quantum-search/pkg/lib"
-	"math"
+	"grover-quantum-search/pkg/domain/collection"
+	"grover-quantum-search/pkg/domain/service"
+	"grover-quantum-search/pkg/domain/valueObject"
 )
 
 func FixedNQubitTimesAllUsecase(min int, max int) {
@@ -27,9 +27,14 @@ func FixedNQubitTimesAllUsecase(min int, max int) {
 func FixedNQubitTimesUsecase(n int) {
 	loop := 100000
 
-	qubits := make(model.Qubits, int(math.Pow(2.0, float64(n))))
-	for i := 0; i < len(qubits); i++ {
-		qubits[i] = model.Qubit(complex(1, 1))
+	newN, err := valueObject.NewN(n)
+	if err != nil {
+		panic(err)
+	}
+
+	qubits := collection.MakeNQubits(newN)
+	for i := 0; i < cap(qubits); i++ {
+		qubits = append(qubits, valueObject.Qubit(complex(1, 1)))
 	}
 	qubits = *qubits.Normalize()
 
@@ -37,7 +42,7 @@ func FixedNQubitTimesUsecase(n int) {
 	beforeQubits := qubits
 
 	for i := 1; i < loop; i++ {
-		newQubits := *lib.GroverQuantumSearch(&beforeQubits, targets)
+		newQubits := *service.GroverQuantumSearch(&beforeQubits, targets)
 
 		if beforeQubits[targets[0]].Abs() > newQubits[targets[0]].Abs() {
 			fmt.Println(n, i-1)

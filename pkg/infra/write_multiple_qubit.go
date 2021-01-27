@@ -3,13 +3,13 @@ package infra
 import (
 	"encoding/csv"
 	"fmt"
-	"grover-quantum-search/pkg/domain/model"
+	"grover-quantum-search/pkg/domain/valueObject"
 	"os"
 	"strconv"
 )
 
 func WriteMultipleQubitCsv(
-	multipleQubits [][]model.Qubit,
+	multipleQubits [][]valueObject.Qubit,
 	path string,
 ) error {
 	fp, err := os.Create(path)
@@ -63,7 +63,7 @@ func (d shouldMultipleWriteData) toCsvRecord() []string {
 	return results
 }
 
-func writableMultipleQubitData(multipleQubits [][]model.Qubit, header shouldMultipleWriteData) [][]string {
+func writableMultipleQubitData(multipleQubits [][]valueObject.Qubit, header shouldMultipleWriteData) [][]string {
 	newRecords := make([][]string, 0, 0)
 	newRecords = append(newRecords, header.toCsvRecord())
 

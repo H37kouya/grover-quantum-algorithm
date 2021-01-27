@@ -2,28 +2,34 @@ package usecase
 
 import (
 	"fmt"
-	"grover-quantum-search/pkg/domain/model"
+	"grover-quantum-search/pkg/domain/collection"
+	"grover-quantum-search/pkg/domain/service"
+	"grover-quantum-search/pkg/domain/valueObject"
 	"grover-quantum-search/pkg/infra"
-	"grover-quantum-search/pkg/lib"
-	"math"
+	"grover-quantum-search/pkg/lib/time"
 )
 
 func FixedNQubitCsvUsecase(n int) {
 	loop := 3000
 
-	qubits := make(model.Qubits, int(math.Pow(2.0, float64(n))))
-	for i := 0; i < len(qubits); i++ {
-		qubits[i] = model.Qubit(complex(1, 1))
+	newN, err := valueObject.NewN(n)
+	if err != nil {
+		panic(err)
+	}
+
+	qubits := collection.MakeNQubits(newN)
+	for i := 0; i < cap(qubits); i++ {
+		qubits = append(qubits, valueObject.Qubit(complex(1, 1)))
 	}
 	qubits = *qubits.Normalize()
 
-	timeForFileName := lib.GetTimeForFileName()
+	timeForFileName := time.GetTimeForFileName()
 	targets := []int{1}
-	newQubitsTransitionData := make(model.QubitsTransition, 0, loop)
+	newQubitsTransitionData := make(collection.QubitsTransition, 0, loop)
 	newQubitsTransitionData = append(newQubitsTransitionData, qubits)
 
 	for i := 1; i < loop; i++ {
-		newQubits := lib.GroverQuantumSearch(&newQubitsTransitionData[i-1], targets)
+		newQubits := service.GroverQuantumSearch(&newQubitsTransitionData[i-1], targets)
 		newQubitsTransitionData[i] = *newQubits
 	}
 
