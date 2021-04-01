@@ -3,21 +3,21 @@ package num
 import "math"
 
 // Round 四捨五入
-func Round(num, places float64) float64 {
+func Round(num, places /* 桁数 */ float64) float64 {
 	shift := math.Pow(10, places)
 
 	return roundInt(num*shift) / shift
 }
 
 // RoundUp 切り上げ
-func RoundUp(num, places float64) float64 {
+func RoundUp(num, places /* 桁数 */ float64) float64 {
 	shift := math.Pow(10, places)
 
 	return roundUpInt(num*shift) / shift
 }
 
 // RoundDown 切り捨て
-func RoundDown(num, places float64) float64 {
+func RoundDown(num, places /* 桁数 */ float64) float64 {
 	shift := math.Pow(10, places)
 
 	return math.Trunc(num*shift) / shift
@@ -33,7 +33,7 @@ func roundInt(num float64) float64 {
 	return t
 }
 
-// roundInt 切り上げ(整数)
+// roundUpInt 切り上げ(整数)
 func roundUpInt(num float64) float64 {
 	t := math.Trunc(num)
 
