@@ -62,84 +62,44 @@ func ShorFactorization(M int) ([]int, error) {
 			return nil, err
 		}
 
+		// (3) 1 から M - 1 の間で任意に x を選ぶ。
 		x := num.Int64ToInt(randBigInt.Int64() + 1)
+
+		// もし x と M の最大公約数 (gcd(x, M)) が 1 より大きい (gcd(x, M) > 1)ならば、gcd(x, M)を出力する
 		gcd := num.Gcd(x, expectTwoM)
 		fmt.Println("gcd", gcd)
 		if gcd > 1 {
-			newGcd, errShorFactorization := ShorFactorization(gcd)
-			for _, result := range newGcd {
-				results = append(results, result)
-			}
-
-			newResults, errShorFactorization := ShorFactorization(expectTwoM / gcd)
-			fmt.Println("double ShorFactorization", newResults)
-			fmt.Println("errShorFactorization", errShorFactorization)
-			for _, result := range newResults {
-				results = append(results, result)
-			}
-
-			sort.Ints(results)
-			return results, nil
-
-		} else {
-			r := discoverClassicOrder(x, expectTwoM)
-
-			if r%2 != 0 {
-				fmt.Println("order discovery failure")
-				continue
-			}
-
-			fac1 := num.Gcd(int(math.Pow(float64(x), float64(r/2)))-1, expectTwoM)
-			if fac1 != 1 && fac1 != expectTwoM {
-				fmt.Println("factor -> ", expectTwoM)
-
-				newResults, errShorFactorization := ShorFactorization(fac1)
-				fmt.Println("double ShorFactorization", newResults)
-				fmt.Println("errShorFactorization", errShorFactorization)
-				for _, result := range newResults {
-					results = append(results, result)
-				}
-
-				newResults, errShorFactorization = ShorFactorization(expectTwoM / fac1)
-				fmt.Println("double ShorFactorization", newResults)
-				fmt.Println("errShorFactorization", errShorFactorization)
-				for _, result := range newResults {
-					results = append(results, result)
-				}
-
-				sort.Ints(results)
-				return results, nil
-
-			}
-			fac2 := num.Gcd(int(math.Pow(float64(x), float64(r/2)))+1, expectTwoM)
-			if fac2 != 1 && fac2 != expectTwoM {
-				fmt.Println("factor -> ", expectTwoM)
-
-				newResults, errShorFactorization := ShorFactorization(fac2)
-				fmt.Println("double ShorFactorization", newResults)
-				fmt.Println("errShorFactorization", errShorFactorization)
-				for _, result := range newResults {
-					results = append(results, result)
-				}
-
-				newResults, errShorFactorization = ShorFactorization(expectTwoM / fac2)
-				fmt.Println("double ShorFactorization", newResults)
-				fmt.Println("errShorFactorization", errShorFactorization)
-				for _, result := range newResults {
-					results = append(results, result)
-				}
-
-				sort.Ints(results)
-				return results, nil
-
-			}
-			fmt.Println("factor estimation failure")
+			return computedAfterGcd(results, gcd, expectTwoM)
 		}
+
+		// (4) x, M (x < M) の位数 r を計算する (x^r mod M = 1)
+		r := discoverClassicOrder(x, expectTwoM)
+
+		// (5) もし r が偶数であり、x^(r/2) mod M != 1 ならば、gcd(x^(r/2) - 1, M)とgcd(x^(r/2) + 1, M)を計算する
+		// もしこれらのうち一つが M の因数なら、それを出力する。だめなら(3)へ戻る。
+		if r%2 != 0 {
+			fmt.Println("order discovery failure")
+			continue
+		}
+
+		fac1 := num.Gcd(int(math.Pow(float64(x), float64(r/2)))-1, expectTwoM)
+		if fac1 != 1 && fac1 != expectTwoM {
+			return computedAfterGcd(results, fac1, expectTwoM)
+		}
+
+		fac2 := num.Gcd(int(math.Pow(float64(x), float64(r/2)))+1, expectTwoM)
+		if fac2 != 1 && fac2 != expectTwoM {
+			return computedAfterGcd(results, fac2, expectTwoM)
+		}
+
+		fmt.Println("factor estimation failure")
 	}
 
 	if expectTwoM != 1 {
 		results = append(results, expectTwoM)
 	}
+
+	fmt.Println("[Failed] ShorFactorization results=", results)
 
 	return results, nil
 }
@@ -169,4 +129,32 @@ func discoverClassicOrder(a, N int) int {
 	}
 
 	return i
+}
+
+func computedAfterGcd(baseResults []int, resultGcd int, M int) ([]int, error) {
+	fmt.Println("computedAfterGcd", baseResults, resultGcd, M)
+
+	newResults1, err := ShorFactorization(resultGcd)
+	if err != nil {
+		fmt.Println("computedAfterGcd ERROR", err)
+	}
+	newResults2, err := ShorFactorization(M / resultGcd)
+	if err != nil {
+		fmt.Println("computedAfterGcd ERROR", err)
+	}
+
+	results := make([]int, 0, len(baseResults)+len(newResults1)+len(newResults2))
+
+	for _, result := range baseResults {
+		results = append(results, result)
+	}
+	for _, result := range newResults1 {
+		results = append(results, result)
+	}
+	for _, result := range newResults2 {
+		results = append(results, result)
+	}
+
+	sort.Ints(results)
+	return results, nil
 }
