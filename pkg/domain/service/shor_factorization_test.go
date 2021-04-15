@@ -92,6 +92,8 @@ func TestShorFactorization(t *testing.T) {
 		{name: "33331の素因数分解", args: args{M: 33331}, want: []int{33331}, wantErr: false},
 		{name: "333331の素因数分解", args: args{M: 333331}, want: []int{333331}, wantErr: false},
 		{name: "5*7*11*13*17*19の素因数分解", args: args{M: 5 * 7 * 11 * 13 * 17 * 19}, want: []int{5, 7, 11, 13, 17, 19}, wantErr: false},
+		{name: "119 * 333331の素因数分解", args: args{M: 119 * 333331}, want: []int{7, 17, 333331}, wantErr: false},
+		{name: "3331 * 333331の素因数分解", args: args{M: 3331 * 333331}, want: []int{3331, 333331}, wantErr: false},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
