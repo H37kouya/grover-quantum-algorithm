@@ -174,8 +174,8 @@ func Test_roundUpInt(t *testing.T) {
 		t.Run(
 			numStr+"で切り上げすると"+wantStr+"である",
 			func(t *testing.T) {
-				if got := roundUpInt(tt.args.num); got != tt.want {
-					t.Errorf("roundUpInt() = %v, want %v", got, tt.want)
+				if got := RoundUpInt(tt.args.num); got != tt.want {
+					t.Errorf("RoundUpInt() = %v, want %v", got, tt.want)
 				}
 			})
 	}

@@ -5,7 +5,7 @@ import (
 	"testing"
 )
 
-func TestShorFactorization(t *testing.T) {
+func TestClassicFactorization(t *testing.T) {
 	type args struct {
 		M int
 	}
@@ -97,13 +97,13 @@ func TestShorFactorization(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := ShorFactorization(tt.args.M)
+			got, err := ClassicFactorization(tt.args.M)
 			if (err != nil) != tt.wantErr {
-				t.Errorf("ShorFactorization() error = %v, wantErr %v", err, tt.wantErr)
+				t.Errorf("ClassicFactorization() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
 			if !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("ShorFactorization() got = %v, want %v", got, tt.want)
+				t.Errorf("ClassicFactorization() got = %v, want %v", got, tt.want)
 			}
 		})
 	}
