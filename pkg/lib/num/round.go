@@ -13,7 +13,7 @@ func Round(num, places /* 桁数 */ float64) float64 {
 func RoundUp(num, places /* 桁数 */ float64) float64 {
 	shift := math.Pow(10, places)
 
-	return roundUpInt(num*shift) / shift
+	return RoundUpInt(num*shift) / shift
 }
 
 // RoundDown 切り捨て
@@ -33,8 +33,8 @@ func roundInt(num float64) float64 {
 	return t
 }
 
-// roundUpInt 切り上げ(整数)
-func roundUpInt(num float64) float64 {
+// RoundUpInt 切り上げ(整数)
+func RoundUpInt(num float64) float64 {
 	t := math.Trunc(num)
 
 	return t + math.Copysign(1, num)

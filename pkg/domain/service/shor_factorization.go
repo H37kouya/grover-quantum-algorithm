@@ -2,9 +2,13 @@ package service
 
 import (
 	"fmt"
+	"grover-quantum-search/pkg/domain/collection"
+	"grover-quantum-search/pkg/domain/valueObject"
 	"grover-quantum-search/pkg/lib/num"
 	"math"
+	"math/bits"
 	"sort"
+	"strconv"
 )
 
 // ShorFactorization ショアのアルゴリズム
@@ -67,11 +71,14 @@ func ShorFactorization(M int) ([]int, error) {
 		gcd := num.Gcd(x, M)
 		fmt.Println("gcd", gcd)
 		if gcd > 1 {
-			return computedAfterGcd(results, gcd, M)
+			return doubleCheckShorFactorization(results, gcd, M)
 		}
 
 		// (4) x, M (x < M) の位数 r を計算する (x^r mod M = 1)
-		r := discoverClassicOrder(x, M)
+		r, err := discoverQuantumOrder(x, M)
+		if err != nil {
+			return nil, err
+		}
 
 		// (5) もし r が偶数であり、x^(r/2) mod M != 1 ならば、gcd(x^(r/2) - 1, M)とgcd(x^(r/2) + 1, M)を計算する
 		// もしこれらのうち一つが M の因数なら、それを出力する。だめなら(3)へ戻る。
@@ -82,12 +89,12 @@ func ShorFactorization(M int) ([]int, error) {
 
 		fac1 := num.Gcd(int(math.Pow(float64(x), float64(r/2)))-1, M)
 		if fac1 != 1 && fac1 != M {
-			return computedAfterGcd(results, fac1, M)
+			return doubleCheckShorFactorization(results, fac1, M)
 		}
 
 		fac2 := num.Gcd(int(math.Pow(float64(x), float64(r/2)))+1, M)
 		if fac2 != 1 && fac2 != M {
-			return computedAfterGcd(results, fac2, M)
+			return doubleCheckShorFactorization(results, fac2, M)
 		}
 
 		fmt.Println("factor estimation failure")
@@ -114,30 +121,87 @@ func divisionTwoAsFarAsPossible(M int) (int, int) {
 	return count, tmp
 }
 
-// discoverClassicOrder 古典の位数探索
-func discoverClassicOrder(a, N int) int {
-	fmt.Println("discoverClassicOrder args", a, N)
+// discoverQuantumOrder 量子の位数探索
+func discoverQuantumOrder(x, N int) (int, error) {
+	fmt.Println("discoverQuantumOrder args", x, N)
+
+	// 1) 整数 N と互いに素になる整数 x を選ぶ。
+	// 2) 初期状態を準備する。
+	//    第1レジスタ：s / r の位相推定結果を必要な精度で納めるため t 量子ビット (|0> に初期化)
+	//    第2レジスタ：N を入力する計算用の L 量子ビット (|1> に初期化)
+	// 3) 第1レジスタすべてにアダマールゲートを作用する。
+	// 4) 制御ユニタリゲート U(x, N) を作用させる。
+	// 5) 第1レジスタに量子フーリエ逆変換を行う。
+	// 6) 第1レジスタを測定し s / r を得る。
+	// 7) 連分数アルゴリズムを適用し位数 r を決定する。
+
+	// MEMO
+	// L は N のビット数 L := logN
+	// t = 2 L + 1 + log(3 + 1 / 2ε)
+	// ε は r を推定する手続きで失敗する確率の上限
+
+	// L は N のビット数 L := logN
+	L := int(num.RoundUpInt(math.Log(float64(N))))
+	// t = 2 L + 1 + log(3 + 1 / 2ε)
+	t := 2*L + 1 + 2
+
+	fmt.Println("discoverQuantumOrder L は N のビット数 L := logN", L)
+	fmt.Println("discoverQuantumOrder t = 2 L + 1 + log(3 + 1 / 2ε)", t)
+
+	// 2) 初期状態を準備する。
+	//    第1レジスタ：s / r の位相推定結果を必要な精度で納めるため t 量子ビット (|0> に初期化)
+	//    第2レジスタ：N を入力する計算用の L 量子ビット (|1> に初期化)
+
+	firstRegisterN, err := valueObject.NewN(t)
+	if err != nil {
+		return 0, err
+	}
+	firstRegisterQubits := collection.MakeNQubits(firstRegisterN)
+	secondRegisterN, err := valueObject.NewN(L)
+	if err != nil {
+		return 0, err
+	}
+	secondRegisterQubits := collection.MakeNQubits(secondRegisterN)
+
+	fmt.Println(firstRegisterQubits, secondRegisterQubits)
+
+	bitsTwo, _ := strconv.ParseInt(string(rune(N-1)), 2, 0)
+	bitsLen := bits.Len(uint(bitsTwo)) - 2
+	// ビット数
+	bitNum := 2*bitsLen + 1
+	fmt.Println("discoverQuantumOrder", bitsTwo, bitsLen, bitNum)
+
+	nBits, err := valueObject.NewN(bitNum)
+	if err != nil {
+		return 0, err
+	}
+	qubits := collection.MakeNQubits(nBits)
+	s := fmt.Sprintf("%b", N-1)
+	for idx, c := range s {
+		qubits[idx] = valueObject.NewQubit(float64(c), 0)
+	}
 
 	i := 1
 	for i = 1; i < N; i++ {
-		x := int(math.Pow(float64(a), float64(i))) % N
+		x := int(math.Pow(float64(x), float64(i))) % N
 		if x == 1 {
-			fmt.Println("discoverClassicOrder retVal", i)
-			return i
+			fmt.Println("discoverQuantumOrder retVal", i)
+			return i, nil
 		}
 	}
 
-	fmt.Println("discoverClassicOrder retVal", i)
-	return i
+	fmt.Println("discoverQuantumOrder retVal", i)
+	return i, nil
 }
 
+// ShorFactorizationTwice 因数が素因数分解ができるかどうかを確認する
 func ShorFactorizationTwice(baseResults []int, newM int) ([]int, error) {
 	fmt.Println("ShorFactorizationTwice", baseResults, newM)
 
 	newResults, err := ShorFactorization(newM)
 	fmt.Println("ShorFactorizationTwice#after ShorFactorization", newResults, err)
 	if err != nil {
-		fmt.Println("computedAfterGcd ERROR", err)
+		fmt.Println("doubleCheckShorFactorization ERROR", err)
 	}
 
 	results := make([]int, 0, len(baseResults)+len(newResults))
@@ -153,18 +217,19 @@ func ShorFactorizationTwice(baseResults []int, newM int) ([]int, error) {
 	return results, nil
 }
 
-func computedAfterGcd(baseResults []int, resultGcd int, M int) ([]int, error) {
-	fmt.Println("computedAfterGcd", baseResults, resultGcd, M)
+// doubleCheckShorFactorization 2つの因数をさらに素因数分解できるかを確認する
+func doubleCheckShorFactorization(baseResults []int, resultGcd int, M int) ([]int, error) {
+	fmt.Println("doubleCheckShorFactorization", baseResults, resultGcd, M)
 
 	newResults1, err := ShorFactorization(resultGcd)
-	fmt.Println("computedAfterGcd#after ShorFactorization1", newResults1, err)
+	fmt.Println("doubleCheckShorFactorization#after ShorFactorization1", newResults1, err)
 	if err != nil {
-		fmt.Println("computedAfterGcd ERROR", err)
+		fmt.Println("doubleCheckShorFactorization ERROR", err)
 	}
 	newResults2, err := ShorFactorization(M / resultGcd)
-	fmt.Println("computedAfterGcd#after ShorFactorization2", newResults2, err)
+	fmt.Println("doubleCheckShorFactorization#after ShorFactorization2", newResults2, err)
 	if err != nil {
-		fmt.Println("computedAfterGcd ERROR", err)
+		fmt.Println("doubleCheckShorFactorization ERROR", err)
 	}
 
 	results := make([]int, 0, len(baseResults)+len(newResults1)+len(newResults2))
@@ -180,6 +245,6 @@ func computedAfterGcd(baseResults []int, resultGcd int, M int) ([]int, error) {
 	}
 
 	sort.Ints(results)
-	fmt.Println("computedAfterGcd retVal", results)
+	fmt.Println("doubleCheckShorFactorization retVal", results)
 	return results, nil
 }
