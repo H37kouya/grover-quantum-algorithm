@@ -88,3 +88,34 @@ func TestNewN(t *testing.T) {
 		})
 	}
 }
+
+func TestNewNByTenDecimalNumber(t *testing.T) {
+	type args struct {
+		decimalNumber int
+	}
+	tests := []struct {
+		name    string
+		args    args
+		want    N
+		wantErr bool
+	}{
+		{name: "1は生成できない", args: args{decimalNumber: 1}, want: N{value: 0}, wantErr: true},
+		{name: "4は生成できる", args: args{decimalNumber: 4}, want: N{value: 2}, wantErr: false},
+		{name: "5は生成できる", args: args{decimalNumber: 5}, want: N{value: 3}, wantErr: false},
+		{name: "16は生成できる", args: args{decimalNumber: 16}, want: N{value: 4}, wantErr: false},
+		{name: "21は生成できる", args: args{decimalNumber: 21}, want: N{value: 5}, wantErr: false},
+		{name: "2000は生成できる", args: args{decimalNumber: 2000}, want: N{value: 11}, wantErr: false},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, err := NewNByTenDecimalNumber(tt.args.decimalNumber)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("NewNByTenDecimalNumber() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("NewNByTenDecimalNumber() got = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
