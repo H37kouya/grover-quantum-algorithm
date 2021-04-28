@@ -1,6 +1,7 @@
 package service
 
 import (
+	"grover-quantum-search/pkg/domain/valueObject"
 	"reflect"
 	"testing"
 )
@@ -104,6 +105,51 @@ func TestShorFactorization(t *testing.T) {
 			}
 			if !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("ShorFactorization() got = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestControlUnitaryGate(t *testing.T) {
+	type args struct {
+		x int
+		M int
+		n valueObject.N
+	}
+	tests := []struct {
+		name string
+		args args
+		want []int
+	}{
+		{
+			name: "制御ユニタリゲート U(x=7, N=15) n=4",
+			args: args{
+				x: 7,
+				M: 15,
+				n: (func() valueObject.N {
+					N, _ := valueObject.NewN(4)
+					return N
+				})(),
+			},
+			want: []int{1, 4, 7, 13},
+		},
+		{
+			name: "制御ユニタリゲート U(x=11, N=21) n=11",
+			args: args{
+				x: 11,
+				M: 21,
+				n: (func() valueObject.N {
+					N, _ := valueObject.NewN(11)
+					return N
+				})(),
+			},
+			want: []int{1, 2, 4, 8, 11, 16},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := ControlUnitaryGate(tt.args.x, tt.args.M, tt.args.n); !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("ControlUnitaryGate() = %v, want %v", got, tt.want)
 			}
 		})
 	}

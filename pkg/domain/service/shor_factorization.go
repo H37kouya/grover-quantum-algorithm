@@ -2,13 +2,10 @@ package service
 
 import (
 	"fmt"
-	"grover-quantum-search/pkg/domain/collection"
 	"grover-quantum-search/pkg/domain/valueObject"
 	"grover-quantum-search/pkg/lib/num"
 	"math"
-	"math/bits"
 	"sort"
-	"strconv"
 )
 
 // ShorFactorization ショアのアルゴリズム
@@ -108,90 +105,75 @@ func ShorFactorization(M int) ([]int, error) {
 	return results, nil
 }
 
-// divisionTwoAsFarAsPossible 可能な限り2で割り続ける 第一引数は2で割った回数、第二引数は割り切った結果
-func divisionTwoAsFarAsPossible(M int) (int, int) {
-	count := 0
-
-	tmp := M
-	for tmp%2 == 0 {
-		count++
-		tmp /= 2
-	}
-
-	return count, tmp
-}
-
 // discoverQuantumOrder 量子の位数探索
-func discoverQuantumOrder(x, N int) (int, error) {
-	fmt.Println("discoverQuantumOrder args", x, N)
+func discoverQuantumOrder(x, M int) (int, error) {
+	fmt.Println("discoverQuantumOrder args", x, M)
 
 	// 1) 整数 N と互いに素になる整数 x を選ぶ。
 	// 2) 初期状態を準備する。
 	//    第1レジスタ：s / r の位相推定結果を必要な精度で納めるため t 量子ビット (|0> に初期化)
 	//    第2レジスタ：N を入力する計算用の L 量子ビット (|1> に初期化)
 	// 3) 第1レジスタすべてにアダマールゲートを作用する。
-	// 4) 制御ユニタリゲート U(x, N) を作用させる。
+	// 4) 制御ユニタリゲート U(x, M) を作用させる。
 	// 5) 第1レジスタに量子フーリエ逆変換を行う。
 	// 6) 第1レジスタを測定し s / r を得る。
 	// 7) 連分数アルゴリズムを適用し位数 r を決定する。
 
 	// MEMO
-	// L は N のビット数 L := logN
 	// t = 2 L + 1 + log(3 + 1 / 2ε)
 	// ε は r を推定する手続きで失敗する確率の上限
 
-	// L は N のビット数 L := logN
-	L := int(num.RoundUpInt(math.Log(float64(N))))
-	// t = 2 L + 1 + log(3 + 1 / 2ε)
-	t := 2*L + 1 + 2
+	// M の 2進数表記の桁数
+	n, err := valueObject.NewNByTenDecimalNumber(M)
+	if err != nil {
+		return 0, err
+	}
+	// 位相推定の精度 t = 2 L + 1 + log(3 + 1 / 2ε)
+	t, err := valueObject.NewN(2*n.Get() + 1 + 2)
+	if err != nil {
+		return 0, err
+	}
 
-	fmt.Println("discoverQuantumOrder L は N のビット数 L := logN", L)
+	fmt.Println("discoverQuantumOrder M のビット数", n)
 	fmt.Println("discoverQuantumOrder t = 2 L + 1 + log(3 + 1 / 2ε)", t)
 
-	// 2) 初期状態を準備する。
-	//    第1レジスタ：s / r の位相推定結果を必要な精度で納めるため t 量子ビット (|0> に初期化)
-	//    第2レジスタ：N を入力する計算用の L 量子ビット (|1> に初期化)
+	// 4) 制御ユニタリゲート U(x, N) を作用させる。
+	rArr := ControlUnitaryGate(x, M, t)
+	r := len(rArr) // 周期
 
-	firstRegisterN, err := valueObject.NewN(t)
-	if err != nil {
-		return 0, err
-	}
-	firstRegisterQubits := collection.MakeNQubits(firstRegisterN)
-	secondRegisterN, err := valueObject.NewN(L)
-	if err != nil {
-		return 0, err
-	}
-	secondRegisterQubits := collection.MakeNQubits(secondRegisterN)
+	/*	qubits := collection.MakeNQubits(t)
+		for i := 0; i < t.ElementCount(); i++ {
+			qubits = append(qubits, math.Exp(2 * math.Pi *))
+		}*/
 
-	fmt.Println(firstRegisterQubits, secondRegisterQubits)
+	fmt.Println("4) 制御ユニタリゲート U(x, N) を作用させる", r, rArr)
 
-	bitsTwo, _ := strconv.ParseInt(string(rune(N-1)), 2, 0)
-	bitsLen := bits.Len(uint(bitsTwo)) - 2
-	// ビット数
-	bitNum := 2*bitsLen + 1
-	fmt.Println("discoverQuantumOrder", bitsTwo, bitsLen, bitNum)
+	fmt.Println("discoverQuantumOrder retVal", 0)
+	return 0, nil
+}
 
-	nBits, err := valueObject.NewN(bitNum)
-	if err != nil {
-		return 0, err
-	}
-	qubits := collection.MakeNQubits(nBits)
-	s := fmt.Sprintf("%b", N-1)
-	for idx, c := range s {
-		qubits[idx] = valueObject.NewQubit(float64(c), 0)
-	}
+// ControlUnitaryGate 制御ユニタリゲート U(x, M) nはビット数
+func ControlUnitaryGate(x, M int, n valueObject.N) []int {
+	fmt.Println("ControlUnitaryGate", x, M, n)
 
-	i := 1
-	for i = 1; i < N; i++ {
-		x := int(math.Pow(float64(x), float64(i))) % N
-		if x == 1 {
-			fmt.Println("discoverQuantumOrder retVal", i)
-			return i, nil
+	rArr := make([]int, 0, n.ElementCount()) // 周期の配列
+	for k := 0; k <= n.ElementCount(); k++ {
+		z := int(math.Pow(float64(x), float64(k))) % M
+
+		for _, rVal := range rArr {
+			if rVal == z {
+				sort.Ints(rArr)
+				fmt.Println("ControlUnitaryGate retVal", rArr)
+				return rArr
+			}
 		}
+
+		rArr = append(rArr, z)
 	}
 
-	fmt.Println("discoverQuantumOrder retVal", i)
-	return i, nil
+	sort.Ints(rArr)
+	fmt.Println("ControlUnitaryGate retVal", rArr)
+	return rArr
 }
 
 // ShorFactorizationTwice 因数が素因数分解ができるかどうかを確認する
